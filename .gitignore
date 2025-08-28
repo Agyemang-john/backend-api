@@ -1,0 +1,126 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
+staticfiles/
+
+# Environments
+.env
+.venv/
+venv/
+env/
+ENV/
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node.js / Frontend dependencies (if applicable)
+node_modules/
+npm-debug.log*
+
+# Coverage reports
+.coverage
+htmlcov/
+
+# Database migrations (optional: exclude except initial)
+/migrations/*
+!/migrations/__init__.py
+
+# macOS files
+.DS_Store
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# PyCharm
+.idea/
+
+# pytest
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Local settings (e.g., local.py)
+local_settings.py
+settings/local.py
+
+# PyInstaller
+*.spec
+
+# Environments (conda)
+*.conda
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
+staticfiles/
+
+# Environments
+.env
+.venv/
+venv/
+env/
+ENV/
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node.js / Frontend dependencies (if applicable)
+node_modules/
+npm-debug.log*
+
+# Coverage reports
+.coverage
+htmlcov/
+
+# Database migrations (optional: exclude except initial)
+/migrations/*
+!/migrations/__init__.py
+
+# macOS files
+.DS_Store
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# PyCharm
+.idea/
+
+# pytest
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Local settings (e.g., local.py)
+local_settings.py
+settings/local.py
+
+# PyInstaller
+*.spec
+
+# Environments (conda)
+*.condamedia/
