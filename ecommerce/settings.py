@@ -18,7 +18,7 @@ from urllib.parse import urlparse, parse_qsl
 SECRET_KEY = 'django-insecure-axuc^8+em$b+dauz(!3f*#21^gho#q$5t$na0rd$w*yexhj2t-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG')
+DEBUG = False
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
