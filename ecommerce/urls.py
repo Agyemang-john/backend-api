@@ -4,9 +4,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("Welcome to Negromart!")
+
 
 urlpatterns = [
     # path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
+    path('', home, name='home'),  
     path('secret/', admin.site.urls),
     path("api/", include("djoser.urls")),
     path("api/", include("userauths.urls")),
