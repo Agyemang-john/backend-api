@@ -257,10 +257,10 @@ DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': False,
     'PASSWORD_RESET_CONFIRM_RETYPE': True,
     'TOKEN_MODEL': None,
-    'SERIALIZERS': {
-        'activation': 'djoser.serializers.ActivationSerializer',
-        'resend_activation': 'djoser.serializers.SendEmailResetSerializer',
-    },
+    # 'SERIALIZERS': {
+    #     'activation': 'djoser.serializers.ActivationSerializer',
+    #     'resend_activation': 'djoser.serializers.SendEmailResetSerializer',
+    # },
 }
 
 # Redis URL (set in .env)
