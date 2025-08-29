@@ -255,12 +255,12 @@ DJOSER = {
     'SEND_ACTIVATION_EMAIL': True,
     'ACTIVATION_URL': 'auth/activation/{uid}/{token}',
     'USER_CREATE_PASSWORD_RETYPE': False,
-    # 'PASSWORD_RESET_CONFIRM_RETYPE': True,
+    'PASSWORD_RESET_CONFIRM_RETYPE': True,
     'TOKEN_MODEL': None,
-    # 'SERIALIZERS': {
-    #     # 'activation': 'djoser.serializers.ActivationSerializer',
-    #     'resend_activation': 'djoser.serializers.SendEmailResetSerializer',
-    # },
+    'SERIALIZERS': {
+        'activation': 'djoser.serializers.ActivationSerializer',
+        'resend_activation': 'djoser.serializers.SendEmailResetSerializer',
+    },
 }
 
 # Redis URL (set in .env)
