@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     "djoser",
     'social_django',
     'core',
-    'social_accounts',
     'rest_framework_simplejwt.token_blacklist',
     'userauths',
     'product',
