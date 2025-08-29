@@ -162,29 +162,35 @@ CKEDITOR_UPLOAD_PATH = 'uploads/'
 
 
 # DigitalOcean Spaces configuration
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")          # Access key for your Space
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")   # Secret key for your Space
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = "negromart-space"
-AWS_S3_REGION_NAME = "sfo3"  # Your Space region
-AWS_S3_ENDPOINT_URL = "https://negromart-space.sfo3.digitaloceanspaces.com"
-AWS_S3_CUSTOM_DOMAIN = "https://negromart-space.sfo3.cdn.digitaloceanspaces.com"  # CDN URL for public access
+AWS_S3_REGION_NAME = "sfo3"
+AWS_S3_ENDPOINT_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.digitaloceanspaces.com"
 
+# CDN domain for serving public files
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.cdn.digitaloceanspaces.com"
+
+# Force uploads to root of bucket (no 'bucket-name/' prefix)
+AWS_LOCATION = ""
+
+AWS_DEFAULT_ACL = "public-read"
+AWS_QUERYSTRING_AUTH = False
 AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None  # Recommended with Spaces
-AWS_QUERYSTRING_AUTH = False  # True if using private Spaces
 
-# Use django-storages with boto3 backend
 STORAGES = {
-    "default": {
-        # Media files → Spaces
+    "default": {  # Media files → Spaces
         "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
         "OPTIONS": {
             "bucket_name": AWS_STORAGE_BUCKET_NAME,
             "region_name": AWS_S3_REGION_NAME,
             "endpoint_url": AWS_S3_ENDPOINT_URL,
+            "custom_domain": AWS_S3_CUSTOM_DOMAIN,
+            "location": AWS_LOCATION,  # 👈 important
         },
     },
 }
+
 
 STORAGES["staticfiles"] = {
     "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
