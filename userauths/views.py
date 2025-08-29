@@ -33,7 +33,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 path=settings.AUTH_COOKIE_PATH,
                 secure=settings.AUTH_COOKIE_SECURE,
                 httponly=settings.AUTH_COOKIE_HTTP_ONLY,
-                samesite=settings.AUTH_COOKIE_SAMESITE
+                samesite=settings.AUTH_COOKIE_SAMESITE,
+                domain=settings.AUTH_COOKIE_DOMAIN
             )
             response.set_cookie(
                 "refresh",
@@ -42,7 +43,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 path=settings.AUTH_COOKIE_PATH,
                 secure=settings.AUTH_COOKIE_SECURE,
                 httponly=settings.AUTH_COOKIE_HTTP_ONLY,
-                samesite=settings.AUTH_COOKIE_SAMESITE
+                samesite=settings.AUTH_COOKIE_SAMESITE,
+                domain=settings.AUTH_COOKIE_DOMAIN
             )
 
             # Remove tokens from response body for extra security
@@ -71,7 +73,8 @@ class CustomTokenRefreshView(TokenRefreshView):
                 path=settings.AUTH_COOKIE_PATH,
                 secure=settings.AUTH_COOKIE_SECURE,
                 httponly=settings.AUTH_COOKIE_HTTP_ONLY,
-                samesite=settings.AUTH_COOKIE_SAMESITE
+                samesite=settings.AUTH_COOKIE_SAMESITE,
+                domain=settings.AUTH_COOKIE_DOMAIN
             )
 
             # ✅ Keep it in the response body *only* if from SSR (optional header flag)
