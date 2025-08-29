@@ -298,10 +298,10 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 AUTH_COOKIE = 'access'
 AUTH_ACCESS_MAX_AGE = timedelta(hours=1).total_seconds()
 AUTH_REFRESH_MAX_AGE = timedelta(days=60).total_seconds()
-AUTH_COOKIE_SECURE = False
+AUTH_COOKIE_SECURE = os.getenv('AUTH_COOKIE_SECURE')
 AUTH_COOKIE_HTTP_ONLY = True
 AUTH_COOKIE_PATH = '/'
-AUTH_COOKIE_SAMESITE = 'Lax'
+AUTH_COOKIE_SAMESITE = 'None'
 
 from datetime import timedelta
 
@@ -339,7 +339,7 @@ SIMPLE_JWT = {
     'LEEWAY': 30,  # Allow a 30-second leeway for clock discrepancies
 }
 
-# CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = ["https://api.negromart.com"]
 
 CORS_ALLOWED_ORIGINS = [
