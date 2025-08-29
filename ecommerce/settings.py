@@ -241,12 +241,13 @@ FRONTEND_LOGIN_URL = os.getenv("FRONTEND_LOGIN_URL")
 # Emailing settings
 SITE_URL = os.getenv('FRONTEND_BASE_URL')   # set correctly in each environment
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'oseiagyemanjohn@gmail.com'
-EMAIL_HOST_PASSWORD = 'jrsbfgzjqvtytcdc'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_HOST_USER = 'oseiagyemanjohn@gmail.com'
+# EMAIL_HOST_PASSWORD = 'jrsbfgzjqvtytcdc'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'auth/password-reset/{uid}/{token}',
