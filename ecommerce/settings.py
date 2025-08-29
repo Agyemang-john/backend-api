@@ -186,19 +186,23 @@ STORAGES = {
     },
 }
 
-if DEBUG:  # Local development
-    STORAGES["staticfiles"] = {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-    }
-else:  # Production
-    STORAGES["staticfiles"] = {
-        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
-        "OPTIONS": {
-            "bucket_name": AWS_STORAGE_BUCKET_NAME,
-            "region_name": AWS_S3_REGION_NAME,
-            "endpoint_url": AWS_S3_ENDPOINT_URL,
-        },
-    }
+STORAGES["staticfiles"] = {
+    "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+}
+# if DEBUG:  # Local development
+#     STORAGES["staticfiles"] = {
+#         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+#     }
+# else:  # Production
+#     STORAGES["staticfiles"] = {
+#         "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+#         "OPTIONS": {
+#             "bucket_name": AWS_STORAGE_BUCKET_NAME,
+#             "region_name": AWS_S3_REGION_NAME,
+#             "endpoint_url": AWS_S3_ENDPOINT_URL,
+#         },
+#     }
+
 AUTHENTICATION_BACKENDS = [
     'userauths.backends.EmailOrPhoneBackend',
     'django.contrib.auth.backends.ModelBackend',
