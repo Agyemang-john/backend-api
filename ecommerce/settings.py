@@ -339,8 +339,12 @@ SIMPLE_JWT = {
     'LEEWAY': 30,  # Allow a 30-second leeway for clock discrepancies
 }
 
-CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = ["https://api.negromart.com"]
+
 CORS_ALLOWED_ORIGINS = [
+    "https://negromart.com",
+    "https://www.negromart.com",
     "http://localhost:3000",  # Next.js frontend URL
     "http://159.223.143.103",  # Next.js frontend URL
     "https://frontend-sigma-khaki-70.vercel.app",  # Next.js frontend URL
