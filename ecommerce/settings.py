@@ -169,10 +169,10 @@ AWS_S3_REGION_NAME = "sfo3"
 AWS_S3_ENDPOINT_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.digitaloceanspaces.com"
 
 # # CDN domain for serving public files
-# AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.cdn.digitaloceanspaces.com"
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.cdn.digitaloceanspaces.com"
 
 # Force uploads to root of bucket (no 'bucket-name/' prefix)
-AWS_LOCATION = "negromart-space"
+AWS_LOCATION = "media"
 
 AWS_DEFAULT_ACL = "public-read"
 AWS_QUERYSTRING_AUTH = False
@@ -185,7 +185,7 @@ STORAGES = {
             "bucket_name": AWS_STORAGE_BUCKET_NAME,
             "region_name": AWS_S3_REGION_NAME,
             "endpoint_url": AWS_S3_ENDPOINT_URL,
-            # "custom_domain": AWS_S3_CUSTOM_DOMAIN,
+            "custom_domain": AWS_S3_CUSTOM_DOMAIN,
             "location": AWS_LOCATION,  # 👈 important
         },
     },
