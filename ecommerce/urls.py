@@ -19,7 +19,6 @@ urlpatterns = [
     
     path("api/", include("core.urls")),
     path("api/v1/product/", include("product.urls")),
-    path("api/v1/auth/", include("social_accounts.urls")),
     path("api/v1/auth/user/", include("customer.urls")),
     path("api/v1/payments/", include("payments.urls")),
     path("api/v1/order/", include("order.urls")),
