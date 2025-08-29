@@ -241,7 +241,6 @@ FRONTEND_LOGIN_URL = os.getenv("FRONTEND_LOGIN_URL")
 
 # Emailing settings
 SITE_URL = os.getenv('FRONTEND_BASE_URL')   # set correctly in each environment
-DEFAULT_FROM_EMAIL = "Negromart <no-reply@negromart.com>"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
