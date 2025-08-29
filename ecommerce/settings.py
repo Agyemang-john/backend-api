@@ -340,7 +340,11 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = ["https://api.negromart.com"]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://negromart.com",      # frontend domain
+    "https://api.negromart.com"
+]
 
 CORS_ALLOWED_ORIGINS = [
     "https://negromart.com",
