@@ -270,8 +270,6 @@ DJOSER = {
     #     'activation': 'djoser.serializers.ActivationSerializer',
     #     'resend_activation': 'djoser.serializers.SendEmailResetSerializer',
     # },
-    "DEFAULT_FROM_EMAIL": "no-reply@mail.negromart.com",
-
 }
 
 # Redis URL (set in .env)
