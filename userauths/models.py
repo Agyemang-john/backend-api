@@ -9,6 +9,8 @@ from django.core.files.base import ContentFile
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from rest_framework_simplejwt.tokens import RefreshToken
+import hashlib
+import re
 # from address.models import Country, Region, Town
 
 ROLE_CHOICES = (
@@ -124,40 +126,61 @@ class Profile(models.Model):
             self.generate_initials_profile_picture()
 
     def generate_initials_profile_picture(self):
-        # Generate initials from user's first and last name
-        initials = self.user.first_name[0] + self.user.last_name[0] if self.user.first_name and self.user.last_name else 'U'
+        if self.profile_image:
+            return
 
-        # Create an image with initials
-        image = Image.new('RGB', (200, 200), (255, 255, 255))  # White background
+        # Determine initials
+        if self.user.first_name and self.user.last_name:
+            initials = f"{self.user.first_name[0]}{self.user.last_name[0]}".upper()
+        elif self.user.first_name:
+            initials = self.user.first_name[0].upper()
+        elif self.user.last_name:
+            initials = self.user.last_name[0].upper()
+        else:
+            initials = (self.user.email[0] if self.user.email else "U").upper()
+
+        # Background color from email hash
+        hash_val = int(hashlib.md5(self.user.email.encode("utf-8")).hexdigest(), 16)
+        background_color = (
+            hash_val % 256,
+            (hash_val >> 8) % 256,
+            (hash_val >> 16) % 256,
+        )
+
+        size = (200, 200)
+        image = Image.new("RGB", size, background_color)
         draw = ImageDraw.Draw(image)
+
+        # Load font
         try:
-            font = ImageFont.truetype("arial.ttf", 80)
+            font_size = 150  # start large
+            font = ImageFont.truetype("DejaVuSans-Bold.ttf", font_size)
         except OSError:
-            try:
-                font = ImageFont.truetype("DejaVuSans.ttf", 150)
-            except OSError:
-                font = ImageFont.load_default()
-                
-        # Get the bounding box of the text
-        text_bbox = draw.textbbox((0, 0), initials, font=font)
-        
-        # Extract width and height from the bounding box
-        text_width = text_bbox[2] - text_bbox[0]
-        text_height = text_bbox[3] - text_bbox[1]
-        
-        # Center the text
-        text_position = ((200 - text_width) // 2, (200 - text_height) // 2)
-        
-        # Draw the text on the image
-        draw.text(text_position, initials, font=font, fill=(0, 0, 0))  # Black text
-        
-        # Save image to a BytesIO buffer
+            font = ImageFont.load_default()
+            font_size = 20  # small default
+
+        # Dynamically reduce font if text is bigger than image
+        while True:
+            text_bbox = draw.textbbox((0, 0), initials, font=font)
+            text_width = text_bbox[2] - text_bbox[0]
+            text_height = text_bbox[3] - text_bbox[1]
+
+            if text_width < size[0] * 0.8 and text_height < size[1] * 0.8:
+                break
+            font_size -= 5
+            font = ImageFont.truetype("DejaVuSans-Bold.ttf", font_size)
+
+        text_position = ((size[0] - text_width) // 2, (size[1] - text_height) // 2)
+        draw.text(text_position, initials, font=font, fill=(255, 255, 255))
+
         buffer = BytesIO()
-        image.save(buffer, format='PNG')
+        image.save(buffer, format="PNG")
         buffer.seek(0)
-        
-        # Save image to ImageField
-        self.profile_image.save(f'{self.user.email}_profile.png', ContentFile(buffer.read()), save=True)
+
+        base_name = self.user.email.split("@")[0] if self.user.email else "user"
+        safe_name = re.sub(r'[^a-zA-Z0-9_-]', "_", base_name)
+        filename = f"{safe_name}_avatar.png"
+        self.profile_image.save(filename, ContentFile(buffer.read()), save=True)
 
 
 class ContactUs(models.Model):

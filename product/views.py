@@ -18,6 +18,17 @@ from .service import get_fbt_recommendations, get_cart_product_ids
 from .shipping import can_product_ship_to_user
 from copy import deepcopy
 
+class ProductsAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        # Get all published products, optionally ordered
+        products = Product.published.all().order_by('-trending_score')  # remove [:10]
+        serialized = ProductSerializer(products, many=True, context={'request': request}).data
+
+        # Return as a list, not inside an object
+        return Response(serialized)
+    
 
 class AjaxColorAPIView(APIView):
     def post(self, request, *args, **kwargs):

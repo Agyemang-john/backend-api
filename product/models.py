@@ -3,7 +3,6 @@ from shortuuid.django_fields import ShortUUIDField
 from django.utils.html import mark_safe
 from userauths.models import User
 from taggit.managers import TaggableManager
-from ckeditor_uploader.fields import RichTextUploadingField
 from django.urls import reverse
 from django.utils.text import slugify
 from vendor.models import *
@@ -11,6 +10,7 @@ from core.models import *
 from .utils import *
 from datetime import datetime, timedelta
 from address.models import Region
+from django_ckeditor_5.fields import CKEditor5Field
 
 # from order.models import DeliveryType
 # Create your models here.
@@ -204,10 +204,10 @@ class Product(models.Model):
     video = models.FileField(upload_to="video/%y", default="video.mp4")
     price = models.FloatField(default="1.99", help_text="Base currency in GHS (e.g 70)")
     old_price = models.FloatField(default="2.99", help_text="Base currency in GHS (e.g 50)")
-    features = RichTextUploadingField(null=True, blank=True, default="Black")
-    description = RichTextUploadingField(null=True, blank=True, default="I sell good products only")
-    specifications = RichTextUploadingField(null=True, blank=True, default="Black")
-    delivery_returns = RichTextUploadingField(null=True, blank=True, default="We offer free standard shipping on all orders")
+    features = CKEditor5Field(null=True, blank=True, default="Black")
+    description = CKEditor5Field(null=True, blank=True, default="I sell good products only")
+    specifications = CKEditor5Field(null=True, blank=True, default="Black")
+    delivery_returns = CKEditor5Field(null=True, blank=True, default="We offer free standard shipping on all orders")
     available_in_regions = models.ManyToManyField(Region, blank=True, related_name='products')
     product_type = models.CharField(max_length=50, choices=OPTIONS, null=True, blank=True, default='new')
     total_quantity = models.IntegerField(default="100", null=True, blank=True)

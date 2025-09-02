@@ -1,6 +1,7 @@
 
 from pathlib import Path
 from dotenv import load_dotenv
+from decouple import config
 load_dotenv()
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -18,9 +19,11 @@ from urllib.parse import urlparse, parse_qsl
 SECRET_KEY = 'django-insecure-axuc^8+em$b+dauz(!3f*#21^gho#q$5t$na0rd$w*yexhj2t-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
+ALLOWED_HOSTS = config("ALLOWED_HOSTS").split(",")
+DEVELOPMENT_MODE = config("DEVELOPMENT_MODE")
+ENV = config("DJANGO_ENV", "development")  # "development" or "production"
 
 
 # Application definition
@@ -48,7 +51,7 @@ INSTALLED_APPS = [
     'customer',
     'payments',
     'newsletter',
-    'ckeditor',
+    'django_ckeditor_5',
     'django_celery_beat',
 ]
 
@@ -87,7 +90,7 @@ WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
+tmpPostgres = urlparse(config("DATABASE_URL"))
 
 if DEBUG:
     DATABASES = {
@@ -145,26 +148,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
-if DEBUG:
-    MEDIA_URL = '/media/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-CKEDITOR_UPLOAD_PATH = 'uploads/'
-
-
 # DigitalOcean Spaces configuration
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = "negromart-space"
 AWS_S3_REGION_NAME = "sfo3"
 AWS_S3_ENDPOINT_URL = f"https://{AWS_S3_REGION_NAME}.digitaloceanspaces.com"
@@ -180,11 +172,19 @@ AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400'
 }
 
+
 STORAGES = {
     "default": {  # Media files → Spaces
         "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
     },
 }
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CKEDITOR_BASEPATH = 'uploads/'
 
 
 STORAGES["staticfiles"] = {
@@ -235,23 +235,33 @@ PAYSTACK_PUBLIC_KEY = "pk_test_1a9405c84346cd5f9b41a65524aa546d859be3d0"
 
 # DJOSER CONFIGURATION
 SITE_NAME = "Negromart"
-DOMAIN = os.getenv('DOMAIN')
-FRONTEND_LOGIN_URL = os.getenv("FRONTEND_LOGIN_URL")
+DOMAIN = config('DOMAIN')
+FRONTEND_LOGIN_URL = config("FRONTEND_LOGIN_URL")
 
 # Emailing settings
-SITE_URL = os.getenv('FRONTEND_BASE_URL')   # set correctly in each environment
+SITE_URL = config('FRONTEND_BASE_URL')   # set correctly in each environment
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_HOST_USER = 'oseiagyemanjohn@gmail.com'
-# EMAIL_HOST_PASSWORD = 'jrsbfgzjqvtytcdc'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+if ENV == "development":
+    # Gmail for dev mode
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = 'oseiagyemanjohn@gmail.com'
+    EMAIL_HOST_PASSWORD = 'jrsbfgzjqvtytcdc'  # use App Password
+else:  # production
+    # Amazon SES for production
+    EMAIL_HOST = "email-smtp.eu-north-1.amazonaws.com"
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = "AKIA3FLD2K5CTDYACSOS"   # SES SMTP username
+    EMAIL_HOST_PASSWORD = "BMXF4olumRdtUf20yb0Let/t3d9+xsg1SMWN4gcQeAGn"  # SES SMTP password
+    DEFAULT_FROM_EMAIL = "Negromart <no-reply@mail.negromart.com>"
+    SERVER_EMAIL = "Negromart <no-reply@mail.negromart.com>"
 
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'auth/password-reset/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': False,
+    'SEND_ACTIVATION_EMAIL': True,
     'ACTIVATION_URL': 'auth/activation/{uid}/{token}',
     'USER_CREATE_PASSWORD_RETYPE': False,
     'PASSWORD_RESET_CONFIRM_RETYPE': True,
@@ -260,10 +270,12 @@ DJOSER = {
     #     'activation': 'djoser.serializers.ActivationSerializer',
     #     'resend_activation': 'djoser.serializers.SendEmailResetSerializer',
     # },
+    "DEFAULT_FROM_EMAIL": "no-reply@mail.negromart.com",
+
 }
 
 # Redis URL (set in .env)
-REDIS_URL = os.getenv("REDIS_URL", default="redis://127.0.0.1:6379/1")
+REDIS_URL = config("REDIS_URL", default="redis://127.0.0.1:6379/1")
 
 # Caches (Redis as default backend)
 CACHES = {
@@ -297,11 +309,12 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 AUTH_COOKIE = 'access'
 AUTH_ACCESS_MAX_AGE = timedelta(hours=1).total_seconds()
 AUTH_REFRESH_MAX_AGE = timedelta(days=60).total_seconds()
-AUTH_COOKIE_SECURE = os.getenv('AUTH_COOKIE_SECURE')
+AUTH_COOKIE_SECURE = config('AUTH_COOKIE_SECURE')
 AUTH_COOKIE_HTTP_ONLY = True
 AUTH_COOKIE_PATH = '/'
-AUTH_COOKIE_SAMESITE = 'None'
-AUTH_COOKIE_DOMAIN = '.negromart.com'
+AUTH_COOKIE_SAMESITE = config('AUTH_COOKIE_SAMESITE', default='None')
+AUTH_COOKIE_DOMAIN = '.localhost' if DEBUG else '.negromart.com'
+# AUTH_COOKIE_DOMAIN = '.negromart.com'
 
 from datetime import timedelta
 
@@ -365,4 +378,129 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 
 
 #EXCHANGE RATE API
-EXCHANGE_RATE_API_KEY = os.getenv('EXCHANGE_RATE_API_KEY')
+EXCHANGE_RATE_API_KEY = config('EXCHANGE_RATE_API_KEY')
+
+customColorPalette = [
+    {
+        'color': 'hsl(4, 90%, 58%)',
+        'label': 'Red'
+    },
+    {
+        'color': 'hsl(340, 82%, 52%)',
+        'label': 'Pink'
+    },
+    {
+        'color': 'hsl(291, 64%, 42%)',
+        'label': 'Purple'
+    },
+    {
+        'color': 'hsl(262, 52%, 47%)',
+        'label': 'Deep Purple'
+    },
+    {
+        'color': 'hsl(231, 48%, 48%)',
+        'label': 'Indigo'
+    },
+    {
+        'color': 'hsl(207, 90%, 54%)',
+        'label': 'Blue'
+    },
+]
+
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': {
+            'items': [
+                'heading', '|',
+                'bold', 'italic', 'underline', 'strikethrough', 'highlight', '|',
+                'link', 'bulletedList', 'numberedList', 'todoList', '|',
+                'outdent', 'indent', '|',
+                'blockQuote', '|',
+                'insertTable', 'imageUpload', 'mediaEmbed', 'codeBlock', '|',
+                'fontFamily', 'fontSize', 'fontColor', 'fontBackgroundColor', '|',
+                'removeFormat', 'sourceEditing'
+            ],
+            'shouldNotGroupWhenFull': True
+        },
+
+    },
+    'extends': {
+        'blockToolbar': [
+            'paragraph', 'heading1', 'heading2', 'heading3',
+            '|',
+            'bulletedList', 'numberedList',
+            '|',
+            'blockQuote',
+        ],
+        'toolbar': {
+            'items': ['heading', '|', 'outdent', 'indent', '|', 'bold', 'italic', 'link', 'underline', 'strikethrough',
+                      'code','subscript', 'superscript', 'highlight', '|', 'codeBlock', 'sourceEditing', 'insertImage',
+                    'bulletedList', 'numberedList', 'todoList', '|',  'blockQuote', 'imageUpload', '|',
+                    'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'mediaEmbed', 'removeFormat',
+                    'insertTable',
+                    ],
+            'shouldNotGroupWhenFull': 'true'
+        },
+        'image': {
+            'toolbar': ['imageTextAlternative', '|', 'imageStyle:alignLeft',
+                        'imageStyle:alignRight', 'imageStyle:alignCenter', 'imageStyle:side',  '|'],
+            'styles': [
+                'full',
+                'side',
+                'alignLeft',
+                'alignRight',
+                'alignCenter',
+            ]
+
+        },
+        'table': {
+            'contentToolbar': [ 'tableColumn', 'tableRow', 'mergeTableCells',
+            'tableProperties', 'tableCellProperties' ],
+            'tableProperties': {
+                'borderColors': customColorPalette,
+                'backgroundColors': customColorPalette
+            },
+            'tableCellProperties': {
+                'borderColors': customColorPalette,
+                'backgroundColors': customColorPalette
+            }
+        },
+        'heading' : {
+            'options': [
+                { 'model': 'paragraph', 'title': 'Paragraph', 'class': 'ck-heading_paragraph' },
+                { 'model': 'heading1', 'view': 'h1', 'title': 'Heading 1', 'class': 'ck-heading_heading1' },
+                { 'model': 'heading2', 'view': 'h2', 'title': 'Heading 2', 'class': 'ck-heading_heading2' },
+                { 'model': 'heading3', 'view': 'h3', 'title': 'Heading 3', 'class': 'ck-heading_heading3' }
+            ]
+        }
+    },
+    'list': {
+        'properties': {
+            'styles': 'true',
+            'startIndex': 'true',
+            'reversed': 'true',
+        }
+    },
+    'fontFamily': {
+        'options': [
+            'default',
+            'Arial, Helvetica, sans-serif',
+            'Times New Roman, Times, serif',
+            'Courier New, Courier, monospace'
+        ]
+    },
+    'fontSize': {
+        'options': [9, 11, 13, 15, 17, 19, 21, 24, 28, 32, 36],
+        'supportAllValues': True
+    },
+    'link': {
+        'decorators': {
+            'addTargetToExternalLinks': {
+                'mode': 'automatic',
+                'callback': lambda url: url.startswith('http'),
+                'attributes': {'target': '_blank', 'rel': 'noopener noreferrer'}
+            }
+        }
+    },
+    'mediaEmbed': {'previewsInData': True}
+}

@@ -6,7 +6,7 @@ def send_subscription_email(user_email, token):
     confirm_url = f"{settings.SITE_URL}/newsletter/confirm/{token}/"
 
     subject = "Confirm Your Subscription"
-    message = render_to_string("emails/newsletter_confirmation.html", {
+    message = render_to_string("email/newsletter_confirmation.html", {
         "confirm_url": confirm_url,
     })
 

@@ -25,11 +25,11 @@ urlpatterns = [
     path("api/v1/address/", include("address.urls")),
     path("api/v1/vendor/", include("vendor.urls")),
     path("api/v1/newsletter/", include("newsletter.urls")),
-    path('ckeditor/', include('ckeditor_uploader.urls')), 
+    path("ckeditor5/", include('django_ckeditor_5.urls')),
 ]
 
 
 
-if settings.DEBUG:
+if settings.DEVELOPMENT_MODE is True:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

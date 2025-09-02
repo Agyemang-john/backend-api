@@ -23,11 +23,16 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 # Copy project files
 COPY . .
 
-# Copy and set permissions for entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# # Copy and set permissions for entrypoint script
+# COPY entrypoint.sh /entrypoint.sh
+# RUN chmod +x /entrypoint.sh
 
-# Entrypoint handles migrations / collectstatic / etc.
+# Copy entrypoint script into root (not inside /app)
+COPY entrypoint.sh /entrypoint.sh
+
+# Fix line endings just in case
+RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
+
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Default command

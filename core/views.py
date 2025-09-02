@@ -270,7 +270,7 @@ class SuggestedCartProductsAPIView(APIView):
             cart_product_ids = []
 
             if request.user.is_authenticated:
-                cart = Cart.objects.get_or_create_for_request(request)
+                cart = Cart.objects.get_for_request(request)
                 cart_items = cart.cart_items.select_related("product").all()
                 cart_product_ids = [item.product.id for item in cart_items if item.product]
             else:

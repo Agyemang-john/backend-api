@@ -62,7 +62,7 @@ class AddToCartView(views.APIView):
 
         # Fetch variant (if applicable)
         variant = get_object_or_404(Variants, id=variant_id, product=product) if variant_id else None
-        cart = Cart.objects.create_for_request(request)
+        cart = Cart.objects.get_or_create_for_request(request)
 
         default_delivery_option = ProductDeliveryOption.objects.filter(
             product=product, default=True
@@ -234,7 +234,6 @@ class SyncGuestCartView(APIView):
                 cart_items = []
 
             if not cart_items:
-                print("No guest cart items to sync.")
                 response = Response(
                     {"message": "No guest cart items to sync."},
                     status=status.HTTP_200_OK

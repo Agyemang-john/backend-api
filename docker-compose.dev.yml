@@ -18,6 +18,7 @@ services:
 
   celery:
     build: .
+    entrypoint: [""]   # override Dockerfile entrypoint
     command: celery -A ecommerce worker --loglevel=info
     restart: always
     env_file:
@@ -29,6 +30,7 @@ services:
 
   celery-beat:
     build: .
+    entrypoint: [""]   # override Dockerfile entrypoint
     command: celery -A ecommerce beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     restart: always
     env_file:
