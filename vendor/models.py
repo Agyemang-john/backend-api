@@ -17,6 +17,7 @@ import requests
 import json
 import logging
 from django.conf import settings
+from avatar_generator import Avatar
 
 logger = logging.getLogger(__name__)
 
@@ -313,31 +314,15 @@ class About(models.Model):
             self.generate_initials_profile_picture()
     
     def generate_initials_profile_picture(self):
-        # Generate initials from user's first and last name
-        initials = self.vendor.name[0] if self.vendor.name else 'S'
+        # Get initials or fallback
+        name = self.vendor.name or "Sample Seller"
 
-        # Create an image with initials
-        image = Image.new('RGB', (200, 200), (255, 255, 255))  # White background
-        draw = ImageDraw.Draw(image)
-        font = ImageFont.truetype("arial.ttf", 80)
-        
-        # Get the bounding box of the text
-        text_bbox = draw.textbbox((0, 0), initials, font=font)
-        
-        # Extract width and height from the bounding box
-        text_width = text_bbox[2] - text_bbox[0]
-        text_height = text_bbox[3] - text_bbox[1]
-        
-        # Center the text
-        text_position = ((200 - text_width) // 2, (200 - text_height) // 2)
-        
-        # Draw the text on the image
-        draw.text(text_position, initials, font=font, fill=(0, 0, 0))  # Black text
-        
-        # Save image to a BytesIO buffer
-        buffer = BytesIO()
-        image.save(buffer, format='PNG')
-        buffer.seek(0)
-        
+        # avatar-generator returns PNG bytes directly
+        avatar_bytes = Avatar.generate(200, name)
+
         # Save image to ImageField
-        self.profile_image.save(f'{self.vendor.email}_profile.png', ContentFile(buffer.read()), save=True)
+        self.profile_image.save(
+            f"{self.vendor.email}_profile.png",
+            ContentFile(avatar_bytes),
+            save=True
+        )

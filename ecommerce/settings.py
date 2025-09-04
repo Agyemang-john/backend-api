@@ -243,21 +243,23 @@ SITE_URL = config('FRONTEND_BASE_URL')   # set correctly in each environment
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 if ENV == "development":
-    # Gmail for dev mode
-    EMAIL_HOST = 'smtp.gmail.com'
+    # Gmail for development
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "smtp.gmail.com"
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = 'oseiagyemanjohn@gmail.com'
-    EMAIL_HOST_PASSWORD = 'jrsbfgzjqvtytcdc'  # use App Password
-else:  # production
-    # Amazon SES for production
-    EMAIL_HOST = "email-smtp.eu-north-1.amazonaws.com"
+    EMAIL_HOST_USER = config("DEV_EMAIL_USER")
+    EMAIL_HOST_PASSWORD = config("DEV_EMAIL_PASSWORD")  # App Password
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+else:
+    # SendGrid for production
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "smtp.sendgrid.net"
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = "AKIA3FLD2K5CTDYACSOS"   # SES SMTP username
-    EMAIL_HOST_PASSWORD = "BMXF4olumRdtUf20yb0Let/t3d9+xsg1SMWN4gcQeAGn"  # SES SMTP password
-    DEFAULT_FROM_EMAIL = "Negromart <no-reply@mail.negromart.com>"
-    SERVER_EMAIL = "Negromart <no-reply@mail.negromart.com>"
+    EMAIL_HOST_USER = "apikey"   # keep this literal
+    EMAIL_HOST_PASSWORD = config("SENDGRID_API_KEY")
+    DEFAULT_FROM_EMAIL = "Negromart <no-reply@negromart.com>"
 
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'auth/password-reset/{uid}/{token}',
@@ -311,8 +313,7 @@ AUTH_COOKIE_SECURE = config('AUTH_COOKIE_SECURE')
 AUTH_COOKIE_HTTP_ONLY = True
 AUTH_COOKIE_PATH = '/'
 AUTH_COOKIE_SAMESITE = config('AUTH_COOKIE_SAMESITE', default='None')
-AUTH_COOKIE_DOMAIN = '.localhost' if DEBUG else '.negromart.com'
-# AUTH_COOKIE_DOMAIN = '.negromart.com'
+AUTH_COOKIE_DOMAIN = '.localhost' if DEVELOPMENT_MODE else '.negromart.com'# AUTH_COOKIE_DOMAIN = '.negromart.com'
 
 from datetime import timedelta
 

@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db.models.signals import post_save
 from django.utils import timezone
-
+from avatar_generator import Avatar
 from django.utils.translation import gettext_lazy as _
 from django.core.files.base import ContentFile
 from PIL import Image, ImageDraw, ImageFont
@@ -129,57 +129,30 @@ class Profile(models.Model):
         if self.profile_image:
             return
 
-        # Determine initials
+        # Decide what text to use for initials generation
         if self.user.first_name and self.user.last_name:
-            initials = f"{self.user.first_name[0]}{self.user.last_name[0]}".upper()
+            text = f"{self.user.first_name} {self.user.last_name}"
         elif self.user.first_name:
-            initials = self.user.first_name[0].upper()
+            text = self.user.first_name
         elif self.user.last_name:
-            initials = self.user.last_name[0].upper()
+            text = self.user.last_name
         else:
-            initials = (self.user.email[0] if self.user.email else "U").upper()
+            text = self.user.email or "User"
 
-        # Background color from email hash
-        hash_val = int(hashlib.md5(self.user.email.encode("utf-8")).hexdigest(), 16)
-        background_color = (
-            hash_val % 256,
-            (hash_val >> 8) % 256,
-            (hash_val >> 16) % 256,
-        )
+        # Generate avatar (200px size)
+        avatar = Avatar.generate(200, text)
 
-        size = (200, 200)
-        image = Image.new("RGB", size, background_color)
-        draw = ImageDraw.Draw(image)
-
-        # Load font
-        try:
-            font_size = 150  # start large
-            font = ImageFont.truetype("DejaVuSans-Bold.ttf", font_size)
-        except OSError:
-            font = ImageFont.load_default()
-            font_size = 20  # small default
-
-        # Dynamically reduce font if text is bigger than image
-        while True:
-            text_bbox = draw.textbbox((0, 0), initials, font=font)
-            text_width = text_bbox[2] - text_bbox[0]
-            text_height = text_bbox[3] - text_bbox[1]
-
-            if text_width < size[0] * 0.8 and text_height < size[1] * 0.8:
-                break
-            font_size -= 5
-            font = ImageFont.truetype("DejaVuSans-Bold.ttf", font_size)
-
-        text_position = ((size[0] - text_width) // 2, (size[1] - text_height) // 2)
-        draw.text(text_position, initials, font=font, fill=(255, 255, 255))
-
+        # Save to buffer
         buffer = BytesIO()
-        image.save(buffer, format="PNG")
+        avatar.save(buffer, format="PNG")
         buffer.seek(0)
 
+        # Build safe filename
         base_name = self.user.email.split("@")[0] if self.user.email else "user"
-        safe_name = re.sub(r'[^a-zA-Z0-9_-]', "_", base_name)
+        safe_name = re.sub(r"[^a-zA-Z0-9_-]", "_", base_name)
         filename = f"{safe_name}_avatar.png"
+
+        # Save to ImageField
         self.profile_image.save(filename, ContentFile(buffer.read()), save=True)
 
 
