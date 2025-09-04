@@ -241,25 +241,15 @@ FRONTEND_LOGIN_URL = config("FRONTEND_LOGIN_URL")
 # Emailing settings
 SITE_URL = config('FRONTEND_BASE_URL')   # set correctly in each environment
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_TIMEOUT = 20  # seconds
 
-if ENV == "development":
-    # Gmail for development
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "smtp.gmail.com"
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = config("DEV_EMAIL_USER")
-    EMAIL_HOST_PASSWORD = config("DEV_EMAIL_PASSWORD")  # App Password
-    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-else:
-    # SendGrid for production
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "smtp.sendgrid.net"
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = "apikey"   # keep this literal
-    EMAIL_HOST_PASSWORD = config("SENDGRID_API_KEY")
-    DEFAULT_FROM_EMAIL = "Negromart <no-reply@negromart.com>"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "apikey"   # keep this literal
+EMAIL_HOST_PASSWORD = config("SENDGRID_API_KEY")
+DEFAULT_FROM_EMAIL = "Negromart <no-reply@negromart.com>"
 
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'auth/password-reset/{uid}/{token}',
@@ -351,11 +341,11 @@ SIMPLE_JWT = {
     'LEEWAY': 30,  # Allow a 30-second leeway for clock discrepancies
 }
 
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = False
 
 CSRF_TRUSTED_ORIGINS = [
     "https://negromart.com",      # frontend domain
-    "https://api.negromart.com"
+    "https://api.negromart.com",
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -364,6 +354,10 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Next.js frontend URL
     "http://159.223.143.103",  # Next.js frontend URL
     "https://frontend-sigma-khaki-70.vercel.app",  # Next.js frontend URL
+]
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.negromart\.com$",
 ]
 # CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS.copy()
 
